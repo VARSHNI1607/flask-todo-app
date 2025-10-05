@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modern To-Do App</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do App</h1>
+
+        <!-- Daily Overview -->
+        <div class="daily-overview">
+            <h2>Tasks Due Today ({{ today }})</h2>
+            {% if daily_tasks %}
+                {% for task in daily_tasks %}
+                    <div class="task-card {{ task.priority|lower }}">
+                        <span class="category">{{ task.category }}</span>
+                        <h3>{{ task.title }}</h3>
+                        <span class="priority">{{ task.priority }}</span>
+                        <a href="/complete/{{ task.id }}">✅</a>
+                        <a href="#" onclick="openEditModal({{ task.id }})">✏️</a>
+                        <a href="/delete/{{ task.id }}">🗑</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No tasks due today!</p>
+            {% endif %}
+        </div>
+
+        <!-- Add Task Form -->
+        <div class="add-task">
+            <h2>Add Task</h2>
+            <form action="/add" method="POST">
+                <input type="text" name="title" placeholder="Task title" required>
+                <select name="category" required>
+                    <option value="">Category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Study">Study</option>
+                </select>
+                <input type="date" name="deadline">
+                <select name="priority" required>
+                    <option value="">Priority</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <!-- All Tasks -->
+        <h2>All Tasks (Sorted by Deadline)</h2>
+        <div class="task-list">
+            {% for task in tasks %}
+                <div class="task-card {{ task.priority|lower }} {% if task.completed %}completed{% endif %}">
+                    <span class="category">{{ task.category }}</span>
+                    <h3>{{ task.title }}</h3>
+                    <p>Deadline: {{ task.deadline }} | Priority: {{ task.priority }}</p>
+                    <a href="/complete/{{ task.id }}">✅</a>
+                    <a href="#" onclick="openEditModal({{ task.id }})">✏️</a>
+                    <a href="/delete/{{ task.id }}">🗑</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Task</h2>
+            <form id="editForm" method="POST">
+                <input type="text" name="title" id="editTitle" required>
+                <select name="category" id="editCategory" required>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Study">Study</option>
+                </select>
+                <input type="date" name="deadline" id="editDeadline">
+                <select name="priority" id="editPriority" required>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
